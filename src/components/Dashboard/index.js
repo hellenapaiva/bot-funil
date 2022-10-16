@@ -1,34 +1,44 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { GiSoccerField } from "react-icons/gi";
-import api from "../../Service/Api";
+import { apiGames } from "../../Service/Api";
 
 const Dashboard = () => {
   const [listTeams, setListTeams] = useState([]);
+  const [betRadarId, setBetRadarId] = useState([]);
 
   async function handleSearchProcess(event) {
     event.preventDefault();
-    axios
-      .request(api)
-      .then((response) =>
-        response.data.data.find((row) => row.name === "Futebol")
-      )
-      .then((response) => response.countries.map((row) => row.tournaments))
-      .then((response) => {
-        const jogos = [];
-
-        response.forEach((row) =>
+    try{
+     await axios
+        .request(apiGames)
+        .then((response) =>
+          response.data.data.find((row) => row.name === "Futebol"))
+        .then((response) => response?.countries?.map((row) => row.tournaments))
+        .then(async (response) => {
+          let jogos = [];
+          
+          response?.forEach((row) =>
           row.forEach((league) => jogos.push(...league.events))
-        );
+          );
 
-        setListTeams(jogos);
-      })
-      .catch(function (error) {
+          const promises = jogos.map(async (jogo) => {
+            const { data } = await axios.get(`https://lmt.fn.sportradar.com/common/br/Etc:UTC/gismo/match_detailsextended/` + jogo.betRadarId);
+            jogo.details = data;
+            setBetRadarId(jogo.details.doc)
+            return jogo
+          })
+          jogos = await Promise.all(promises)
+          
+          setListTeams(jogos);
+        })
+    } catch(error) {
         console.error(error);
-      });
+      };
   }
 
-  console.log(listTeams, "listTeams");
+  // console.log(listTeams, "listTeams");
+  console.log(betRadarId, "id");
 
   return (
     <div className="h-full ml-14 mt-14 mb-10 md:ml-64">
@@ -871,7 +881,7 @@ const Dashboard = () => {
               <a
                 className="flex items-center text-blue-700 dark:text-gray-100"
                 href="https://tailwindcomponents.com/component/sidebar-navigation-1"
-                target="_blank"
+               
               >
                 <svg
                   width="20"
@@ -895,7 +905,7 @@ const Dashboard = () => {
               <a
                 className="flex items-center text-blue-700 dark:text-gray-100"
                 href="https://tailwindcomponents.com/component/contact-form-1"
-                target="_blank"
+               
               >
                 <svg
                   width="20"
@@ -919,7 +929,7 @@ const Dashboard = () => {
               <a
                 className="flex items-center text-blue-700 dark:text-gray-100"
                 href="https://tailwindcomponents.com/component/trello-panel-clone"
-                target="_blank"
+               
               >
                 <svg
                   width="20"
@@ -945,7 +955,7 @@ const Dashboard = () => {
               <a
                 className="flex items-center text-blue-700 dark:text-gray-100"
                 href="https://windmill-dashboard.vercel.app/"
-                target="_blank"
+                
               >
                 <svg
                   width="20"

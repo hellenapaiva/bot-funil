@@ -11,6 +11,22 @@ import { MdOutlineNotificationsActive, MdPersonOutline } from "react-icons/md";
 import { BiBot } from "react-icons/bi";
 
 const Header = () => {
+
+  const menu = [
+    {
+      label: "Dashboard",icon: <FiHome />,
+    },
+    { label: "Board", icon: <FiGrid />},
+    { label: "Mensagens", icon: <FiMessageSquare /> },
+    { label: "Notificações", icon: <MdOutlineNotificationsActive /> },
+  ];
+
+  const configs = [
+    { label: "Perfil", icon: <MdPersonOutline /> },
+    { label: "Configurações", icon: <FiSettings /> },
+  ]
+
+
   return (
     <>
       <div className="fixed w-full flex items-center justify-between h-14 text-white z-10 bg-green-800">
@@ -66,64 +82,22 @@ const Header = () => {
                 </div>
               </div>
             </li>
-            <li>
+            {menu.map((item, index) => (
+            <li key={index}>
               <a
                 href="/"
                 className="relative flex flex-row items-center h-11 focus:outline-none hover:bg-green-700 hover:text-white  border-l-4 border-transparent hover:border-green-300 pr-6"
               >
                 <span className="inline-flex justify-center items-center ml-4">
-                  <FiHome />
+                  {item.icon}
                 </span>
                 <span className="ml-2 text-sm tracking-wide truncate">
-                  Dashboard
+                 {item.label}
                 </span>
               </a>
             </li>
-            <li>
-              <a
-                href="/"
-                className="relative flex flex-row items-center h-11 focus:outline-none hover:bg-green-700 hover:text-white  border-l-4 border-transparent hover:border-green-300 pr-6"
-              >
-                <span className="inline-flex justify-center items-center ml-4">
-                  <FiGrid />
-                </span>
-                <span className="ml-2 text-sm tracking-wide truncate">
-                  Board
-                </span>
-                <span className="hidden md:block px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-blue-500 bg-indigo-50 rounded-full">
-                  New
-                </span>
-              </a>
-            </li>
-            <li>
-              <a
-                href="/"
-                className="relative flex flex-row items-center h-11 focus:outline-none hover:bg-green-700 hover:text-white  border-l-4 border-transparent hover:border-green-300 pr-6"
-              >
-                <span className="inline-flex justify-center items-center ml-4">
-                  <FiMessageSquare />
-                </span>
-                <span className="ml-2 text-sm tracking-wide truncate">
-                  Mensagens
-                </span>
-              </a>
-            </li>
-            <li>
-              <a
-                href="/"
-                className="relative flex flex-row items-center h-11 focus:outline-none hover:bg-green-700 hover:text-white  border-l-4 border-transparent hover:border-green-300 pr-6"
-              >
-                <span className="inline-flex justify-center items-center ml-4 text-xl">
-                  <MdOutlineNotificationsActive />
-                </span>
-                <span className="ml-2 text-sm tracking-wide truncate">
-                  Notificações
-                </span>
-                <span className="hidden md:block px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-red-500 bg-red-50 rounded-full">
-                  1.2k
-                </span>
-              </a>
-            </li>
+            ))}
+            
             <li className="px-5 hidden md:block">
               <div className="flex flex-row items-center mt-5 h-8">
                 <div className="text-sm font-bold tracking-wide text-black uppercase">
@@ -131,32 +105,21 @@ const Header = () => {
                 </div>
               </div>
             </li>
-            <li>
+            {configs.map((item, index) => (
+            <li key={index}>
               <a
                 href="/"
                 className="relative flex flex-row items-center h-11 focus:outline-none hover:bg-green-700 hover:text-white  border-l-4 border-transparent hover:border-green-300 pr-6"
               >
                 <span className="inline-flex justify-center items-center ml-4 text-xl">
-                  <MdPersonOutline />
+                  {item.icon}
                 </span>
                 <span className="ml-2 text-sm tracking-wide truncate">
-                  Perfil
+                  {item.label}
                 </span>
               </a>
             </li>
-            <li>
-              <a
-                href="/"
-                className="relative flex flex-row items-center h-11 focus:outline-none hover:bg-green-700 hover:text-white  border-l-4 border-transparent hover:border-green-300 pr-6"
-              >
-                <span className="inline-flex justify-center items-center ml-4">
-                  <FiSettings />
-                </span>
-                <span className="ml-2 text-sm tracking-wide truncate">
-                  Configurações
-                </span>
-              </a>
-            </li>
+            ))}
           </ul>
           <p className="mb-14 px-5 py-3 hidden md:block text-center text-xs">
             Copyright @2022
