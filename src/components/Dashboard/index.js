@@ -1,40 +1,78 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { GiSoccerField } from "react-icons/gi";
 import { apiGames } from "../../Service/Api";
 
 const Dashboard = () => {
   const [listTeams, setListTeams] = useState([]);
 
+  useEffect(() => {
+    handleSearchProcess()
 
-  async function handleSearchProcess(event) {
-    event.preventDefault();
-    try{
-     await axios
+    setInterval(() => {
+      handleSearchProcess()
+    }, 10 * 1000);
+  })
+
+  async function handleSearchProcess() {
+    try {
+      await axios
         .request(apiGames)
         .then((response) =>
           response.data.data.find((row) => row.name === "Futebol"))
         .then((response) => response?.countries?.map((row) => row.tournaments))
         .then(async (response) => {
           let jogos = [];
-          
+
           response?.forEach((row) =>
-          row.forEach((league) => jogos.push(...league.events))
+            row.forEach((league) => jogos.push(...league.events))
           );
 
           const promises = jogos.map(async (jogo) => {
             const { data } = await axios.get(`https://lmt.fn.sportradar.com/common/br/Etc:UTC/gismo/match_detailsextended/` + jogo.betRadarId);
             jogo.details = data;
+
             setListTeams(jogo.details.doc)
+
+            if (!jogo.time) {
+              return jogo
+            }
+
+            const { doc = [] } = jogo.details
+            const [ docItem = {} ] = doc
+            const { data: { values = { } } } = docItem
+            const ataquePerigoso = values['1029'].value
+            const escanteios = values['124'].value
+            const chuteAoGol = values['125'].value
+            const chuteParaFora = values['126'].value
+            const probabilidadeAtaqueCasa = escanteios.home + chuteAoGol.home + chuteParaFora.home
+            const probabilidadeAtaqueVisitante = escanteios.away + chuteAoGol.away + chuteParaFora.away
+
+            if (
+              ataquePerigoso.away / jogo.time >= 1
+              && (probabilidadeAtaqueCasa >= 9 && jogo.period.startsWith('1')
+              || probabilidadeAtaqueCasa >= 15 && jogo.period.startsWith('2'))
+            ) {
+              jogo.homeWin = true
+            }
+
+            if (
+              ataquePerigoso.home / jogo.time >= 1
+              && (probabilidadeAtaqueVisitante >= 9 && jogo.period.startsWith('1')
+              || probabilidadeAtaqueVisitante >= 15 && jogo.period.startsWith('2'))
+            ) {
+              jogo.awayWin = true
+            }
+
             return jogo
           })
           jogos = await Promise.all(promises)
-          
+
           setListTeams(jogos);
         })
-    } catch(error) {
-        console.error(error);
-      };
+    } catch (error) {
+      console.error(error);
+    };
   }
 
   console.log(listTeams, "listTeams");
@@ -62,16 +100,6 @@ const Dashboard = () => {
                   Jogos
                 </h3>
               </div>
-              <div className="relative w-full max-w-full flex-grow flex-1 text-right">
-                <button
-                  onClick={handleSearchProcess}
-                  className="bg-blue-500 dark:bg-gray-100 text-white active:bg-blue-600 dark:text-gray-800 dark:active:text-gray-700 text-xs font-bold uppercase px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                  type="button"
-                  value={listTeams}
-                >
-                  Ver todos
-                </button>
-              </div>
             </div>
             <div className="block w-full overflow-x-auto">
               <table className="items-center w-full bg-transparent border-collapse">
@@ -82,7 +110,7 @@ const Dashboard = () => {
                     </th>
                     <th className="uppercase px-4 bg-gray-100 text-gray-500 align-middle border border-solid border-gray-200 py-3 text-md border-l-0 border-r-0 whitespace-nowrap font-semibold text-center">
                       placar
-                      </th>
+                    </th>
                     <th className="px-4 bg-gray-100 text-gray-500 align-middle border border-solid border-gray-200 py-3 text-md uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-center">
                       Visitante
                     </th>
@@ -92,18 +120,20 @@ const Dashboard = () => {
                   {listTeams.map((item) => {
                     return (
                       <tr className="text-gray-700 ">
-                        <td className="border-t-0 px-4 align-middle border-l-0 border-r-0 text-md whitespace-nowrap p-4 text-center bg-lime-100 border-b-2 border-b-lime-400">
+                        <td
+                          className={`border-t-0 px-4 align-middle border-l-0 border-r-0 text-md whitespace-nowrap p-4 text-center border-b-2 border-b-lime-400 ${item.homeWin ? 'bg-lime-100' : 'bg-red-100'}`}>
                           {item.homeTeamName}
                         </td>
-                    
-                        <td className="border-t-0 px-4 align-middle border-l-0 border-r-0 text-md whitespace-nowrap p-4 bg-lime-200 flex justify-center items-center border-b-2 border-b-lime-400">
+
+                        <td className="border-t-0 px-4 align-middle border-l-0 border-r-0 text-md whitespace-nowrap p-4 bg-lime-200 flex justify-center items-center border-b-2">
                           <div className="flex items-center">
                             <span className="mr-2 text-bold text-lg">{item.homeScore}</span>
                             <span className="mr-2 ml-2 "> - </span>
                             <span className="ml-2 text-bold text-lg">{item.awayScore}</span>
                           </div>
                         </td>
-                        <td className="border-t-0 px-4 align-middle border-l-0 border-r-0 text-md whitespace-nowrap p-4 bg-lime-100 text-center border-b-2 border-b-lime-400">
+                        <td
+                          className={`border-t-0 px-4 align-middle border-l-0 border-r-0 text-md whitespace-nowrap p-4 text-center border-b-2 border-b-lime-400 ${item.homeWin ? 'bg-lime-100' : 'bg-red-100'}`}>
                           {item.awayTeamName}
                         </td>
                       </tr>
@@ -881,7 +911,7 @@ const Dashboard = () => {
               <a
                 className="flex items-center text-blue-700 dark:text-gray-100"
                 href="https://tailwindcomponents.com/component/sidebar-navigation-1"
-               
+
               >
                 <svg
                   width="20"
@@ -905,7 +935,7 @@ const Dashboard = () => {
               <a
                 className="flex items-center text-blue-700 dark:text-gray-100"
                 href="https://tailwindcomponents.com/component/contact-form-1"
-               
+
               >
                 <svg
                   width="20"
@@ -929,7 +959,7 @@ const Dashboard = () => {
               <a
                 className="flex items-center text-blue-700 dark:text-gray-100"
                 href="https://tailwindcomponents.com/component/trello-panel-clone"
-               
+
               >
                 <svg
                   width="20"
@@ -955,7 +985,7 @@ const Dashboard = () => {
               <a
                 className="flex items-center text-blue-700 dark:text-gray-100"
                 href="https://windmill-dashboard.vercel.app/"
-                
+
               >
                 <svg
                   width="20"
