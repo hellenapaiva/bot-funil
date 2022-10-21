@@ -5,7 +5,7 @@ import { apiGames } from "../../Service/Api";
 
 const Dashboard = () => {
   const [listTeams, setListTeams] = useState([]);
-  const [betRadarId, setBetRadarId] = useState([]);
+
 
   async function handleSearchProcess(event) {
     event.preventDefault();
@@ -25,7 +25,7 @@ const Dashboard = () => {
           const promises = jogos.map(async (jogo) => {
             const { data } = await axios.get(`https://lmt.fn.sportradar.com/common/br/Etc:UTC/gismo/match_detailsextended/` + jogo.betRadarId);
             jogo.details = data;
-            setBetRadarId(jogo.details.doc)
+            setListTeams(jogo.details.doc)
             return jogo
           })
           jogos = await Promise.all(promises)
@@ -37,8 +37,8 @@ const Dashboard = () => {
       };
   }
 
-  // console.log(listTeams, "listTeams");
-  console.log(betRadarId, "id");
+  console.log(listTeams, "listTeams");
+
 
   return (
     <div className="h-full ml-14 mt-14 mb-10 md:ml-64">
@@ -77,34 +77,34 @@ const Dashboard = () => {
               <table className="items-center w-full bg-transparent border-collapse">
                 <thead>
                   <tr>
-                    <th className="px-4 bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-100 align-middle border border-solid border-gray-200 dark:border-gray-500 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+                    <th className="px-4 bg-gray-100 text-gray-500 align-middle border border-solid border-gray-200 py-3 text-md uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-center">
                       Casa
                     </th>
-                    <th className="px-4 bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-100 align-middle border border-solid border-gray-200 dark:border-gray-500 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+                    <th className="uppercase px-4 bg-gray-100 text-gray-500 align-middle border border-solid border-gray-200 py-3 text-md border-l-0 border-r-0 whitespace-nowrap font-semibold text-center">
+                      placar
+                      </th>
+                    <th className="px-4 bg-gray-100 text-gray-500 align-middle border border-solid border-gray-200 py-3 text-md uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-center">
                       Visitante
                     </th>
-                    <th className="px-4 bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-100 align-middle border border-solid border-gray-200 dark:border-gray-500 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left min-w-140-px"></th>
                   </tr>
                 </thead>
                 <tbody>
                   {listTeams.map((item) => {
                     return (
-                      <tr className="text-gray-700 dark:text-gray-100">
-                        <th className="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">
+                      <tr className="text-gray-700 ">
+                        <td className="border-t-0 px-4 align-middle border-l-0 border-r-0 text-md whitespace-nowrap p-4 text-center bg-lime-100 border-b-2 border-b-lime-400">
                           {item.homeTeamName}
-                        </th>
-                        <td className="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                          {item.awayTeamName}
                         </td>
-                        <td className="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+                    
+                        <td className="border-t-0 px-4 align-middle border-l-0 border-r-0 text-md whitespace-nowrap p-4 bg-lime-200 flex justify-center items-center border-b-2 border-b-lime-400">
                           <div className="flex items-center">
-                            <span className="mr-2">70%</span>
-                            <div className="relative w-full">
-                              <div className="overflow-hidden h-2 text-xs flex rounded bg-blue-200">
-                                <div className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-600"></div>
-                              </div>
-                            </div>
+                            <span className="mr-2 text-bold text-lg">{item.homeScore}</span>
+                            <span className="mr-2 ml-2 "> - </span>
+                            <span className="ml-2 text-bold text-lg">{item.awayScore}</span>
                           </div>
+                        </td>
+                        <td className="border-t-0 px-4 align-middle border-l-0 border-r-0 text-md whitespace-nowrap p-4 bg-lime-100 text-center border-b-2 border-b-lime-400">
+                          {item.awayTeamName}
                         </td>
                       </tr>
                     );

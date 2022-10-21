@@ -4,10 +4,10 @@ import {
   FiSearch,
   FiHome,
   FiGrid,
-  FiMessageSquare,
   FiSettings,
 } from "react-icons/fi";
 import { MdOutlineNotificationsActive, MdPersonOutline } from "react-icons/md";
+import { GrAnalytics } from "react-icons/gr"
 import { BiBot } from "react-icons/bi";
 
 const Header = () => {
@@ -17,7 +17,7 @@ const Header = () => {
       label: "Dashboard",icon: <FiHome />,
     },
     { label: "Board", icon: <FiGrid />},
-    { label: "Mensagens", icon: <FiMessageSquare /> },
+    { label: "Estatísticas", icon: <GrAnalytics /> },
     { label: "Notificações", icon: <MdOutlineNotificationsActive /> },
   ];
 
