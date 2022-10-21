@@ -39,8 +39,8 @@ const Dashboard = () => {
             }
 
             const { doc = [] } = jogo.details
-            const [ docItem = {} ] = doc
-            const { data: { values = { } } } = docItem
+            const [docItem = {}] = doc
+            const { data: { values = {} } } = docItem
             const ataquePerigoso = values['1029'].value
             const escanteios = values['124'].value
             const chuteAoGol = values['125'].value
@@ -51,7 +51,7 @@ const Dashboard = () => {
             if (
               ataquePerigoso.away / jogo.time >= 1
               && (probabilidadeAtaqueCasa >= 9 && jogo.period.startsWith('1')
-              || probabilidadeAtaqueCasa >= 15 && jogo.period.startsWith('2'))
+                || probabilidadeAtaqueCasa >= 15 && jogo.period.startsWith('2'))
             ) {
               jogo.homeWin = true
             }
@@ -59,7 +59,7 @@ const Dashboard = () => {
             if (
               ataquePerigoso.home / jogo.time >= 1
               && (probabilidadeAtaqueVisitante >= 9 && jogo.period.startsWith('1')
-              || probabilidadeAtaqueVisitante >= 15 && jogo.period.startsWith('2'))
+                || probabilidadeAtaqueVisitante >= 15 && jogo.period.startsWith('2'))
             ) {
               jogo.awayWin = true
             }
